@@ -160,11 +160,68 @@ export const useFilters = (projects: Project[]) => {
     return Array.from(valueMap.values()).sort();
   }, [projects]);
 
+  // Optimize: Compute all unique values in a single pass through projects
+  // This prevents multiple iterations when opening the filter drawer
+  const allUniqueValues = useMemo(() => {
+    if (projects.length === 0) {
+      return {
+        supervisors: [],
+        courses: [],
+        types: [],
+        formats: [],
+        tags: [],
+      };
+    }
+
+    const supervisorMap = new Map<string, string>();
+    const courseMap = new Map<string, string>();
+    const typeMap = new Map<string, string>();
+    const formatMap = new Map<string, string>();
+    const tagMap = new Map<string, string>();
+
+    const normalizeAndAdd = (value: string | string[], map: Map<string, string>) => {
+      const values = Array.isArray(value) ? value : [value];
+      values.forEach(val => {
+        if (typeof val === 'string' && val) {
+          const normalizedValue = val.trim().replace(/\s+/g, ' ').replace(/\n/g, ' ');
+          const lowerValue = normalizedValue.toLowerCase();
+          
+          if (!map.has(lowerValue)) {
+            map.set(lowerValue, normalizedValue);
+          } else {
+            const existing = map.get(lowerValue)!;
+            if (normalizedValue[0] === normalizedValue[0].toUpperCase() && existing[0] !== existing[0].toUpperCase()) {
+              map.set(lowerValue, normalizedValue);
+            }
+          }
+        }
+      });
+    };
+
+    // Single pass through all projects
+    projects.forEach(project => {
+      normalizeAndAdd(project.supervisor, supervisorMap);
+      normalizeAndAdd(project.courses, courseMap);
+      normalizeAndAdd(project.type, typeMap);
+      normalizeAndAdd(project.format, formatMap);
+      normalizeAndAdd(project.tags, tagMap);
+    });
+
+    return {
+      supervisors: Array.from(supervisorMap.values()).sort(),
+      courses: Array.from(courseMap.values()).sort(),
+      types: Array.from(typeMap.values()).sort(),
+      formats: Array.from(formatMap.values()).sort(),
+      tags: Array.from(tagMap.values()).sort(),
+    };
+  }, [projects]);
+
   return {
     filters,
     filteredProjects,
     updateFilter,
     clearFilters,
     getUniqueValues,
+    allUniqueValues,
   };
 };

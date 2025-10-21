@@ -132,14 +132,19 @@ export const Header = () => {
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
-            <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <Drawer 
+              open={isMenuOpen} 
+              onOpenChange={setIsMenuOpen}
+              dismissible={true}
+              shouldScaleBackground={false}
+            >
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu className="w-6 h-6" />
                 </Button>
               </DrawerTrigger>
               <DrawerContent side="right" className="bg-white">
-                <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white z-10">
                    <h2 className="text-lg font-semibold">Навигация</h2>
                   <DrawerClose asChild>
                      <Button variant="ghost" size="icon">
@@ -147,7 +152,7 @@ export const Header = () => {
                     </Button>
                   </DrawerClose>
                 </div>
-                <nav className="flex flex-col space-y-2 p-4">
+                <nav className="flex flex-col space-y-2 p-4 overflow-y-auto">
                   {renderNavLinks(true)}
                 </nav>
               </DrawerContent>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectData } from '../hooks/useProjectData';
 import { useFilters } from '../hooks/useFilters';
@@ -33,22 +33,12 @@ import type { Project } from '../types/project.types';
 export const ProjectsPage = () => {
   const navigate = useNavigate();
   const { data, loading, error } = useProjectData();
-  const { filters, filteredProjects, updateFilter, clearFilters, getUniqueValues } = useFilters(data?.projects || []);
+  const { filters, filteredProjects, updateFilter, clearFilters, allUniqueValues } = useFilters(data?.projects || []);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  const [snap, setSnap] = useState<number | string | null>(null);
   
-  // Pre-compute filter options to avoid recomputing on every drawer open
-  const filterOptions = useMemo(() => {
-    if (!data?.projects) return null;
-    return {
-      supervisors: getUniqueValues('supervisor'),
-      courses: getUniqueValues('courses'),
-      types: getUniqueValues('type'),
-      formats: getUniqueValues('format'),
-      tags: getUniqueValues('tags'),
-    };
-  }, [data?.projects, getUniqueValues]);
+  // Use pre-computed filter options (computed in a single pass in useFilters hook)
+  const filterOptions = data?.projects ? allUniqueValues : null;
   
   // // Load saved view mode or default to 'list'
   // const [activeView, setActiveView] = useState<'list' | 'map'>(() => {
@@ -177,13 +167,9 @@ export const ProjectsPage = () => {
             <div className="lg:hidden mb-6">
               <Drawer 
                 open={isFiltersOpen}
-                onOpenChange={(isOpen) => {
-                  if (isOpen) setSnap(0.95); // Reset snap to top on open
-                  setIsFiltersOpen(isOpen);
-                }}
-                snapPoints={[0.95, 0.5]}
-                activeSnapPoint={snap}
-                setActiveSnapPoint={setSnap}
+                onOpenChange={setIsFiltersOpen}
+                dismissible={true}
+                shouldScaleBackground={false}
               >
                 <DrawerTrigger asChild>
                   <Button variant="outline" className="w-full justify-center py-6">
@@ -197,18 +183,18 @@ export const ProjectsPage = () => {
                     })
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="bg-white" side="bottom">
-                  <DrawerHeader className="border-b border-gray-200 bg-white">
+                <DrawerContent className="bg-white max-h-[95vh]" side="bottom">
+                  <DrawerHeader className="border-b border-gray-200 bg-white sticky top-0 z-10">
                     <div className="flex items-center justify-between">
                       <DrawerTitle className="text-lg font-semibold text-gray-900">Фильтры</DrawerTitle>
                       <DrawerClose asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsFiltersOpen(false)}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
                           <X className="h-4 w-4" />
                         </Button>
                       </DrawerClose>
                     </div>
                   </DrawerHeader>
-                  <div className="flex-1 overflow-y-auto bg-white">
+                  <div className="flex-1 overflow-y-auto bg-white overscroll-contain">
                     <div className="p-4">
                       <SearchBar
                         value={filters.searchQuery}
@@ -226,7 +212,7 @@ export const ProjectsPage = () => {
                       )}
                     </div>
                   </div>
-                  <DrawerFooter className="border-t border-gray-200 bg-gray-50">
+                  <DrawerFooter className="border-t border-gray-200 bg-gray-50 sticky bottom-0">
                     <DrawerClose asChild>
                       <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                         Показать {filteredProjects.length} проектов
