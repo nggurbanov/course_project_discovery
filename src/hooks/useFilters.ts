@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import type { Project, FilterState } from '../types/project.types';
 
 const FILTERS_STORAGE_KEY = 'coursework_filters';
@@ -27,6 +27,15 @@ const loadSavedFilters = (): FilterState => {
 
 export const useFilters = (projects: Project[]) => {
   const [filters, setFilters] = useState<FilterState>(loadSavedFilters);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(filters.searchQuery);
+
+  // Debounce search query to avoid excessive filtering
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(filters.searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [filters.searchQuery]);
 
   // Save filters to sessionStorage whenever they change
   useEffect(() => {
@@ -39,9 +48,9 @@ export const useFilters = (projects: Project[]) => {
 
   const filteredProjects = useMemo(() => {
     const result = projects.filter((project) => {
-      // Search query filter
-      if (filters.searchQuery) {
-        const query = filters.searchQuery.toLowerCase();
+      // Search query filter (using debounced query)
+      if (debouncedSearchQuery) {
+        const query = debouncedSearchQuery.toLowerCase();
         const matchesSearch = 
           project.title_ru.toLowerCase().includes(query) ||
           project.title_en.toLowerCase().includes(query) ||
@@ -109,7 +118,7 @@ export const useFilters = (projects: Project[]) => {
     }
 
     return result;
-  }, [projects, filters]);
+  }, [projects, filters, debouncedSearchQuery]);
 
   const updateFilter = (key: keyof FilterState, value: any) => {
     setFilters(prev => ({
@@ -123,7 +132,7 @@ export const useFilters = (projects: Project[]) => {
     sessionStorage.removeItem(FILTERS_STORAGE_KEY);
   };
 
-  const getUniqueValues = (key: keyof Project) => {
+  const getUniqueValues = useCallback((key: keyof Project) => {
     const values = projects.map(project => project[key]).flat().filter(Boolean);
     
     // Create a map to handle case-insensitive deduplication and normalization
@@ -149,7 +158,7 @@ export const useFilters = (projects: Project[]) => {
     });
     
     return Array.from(valueMap.values()).sort();
-  };
+  }, [projects]);
 
   return {
     filters,

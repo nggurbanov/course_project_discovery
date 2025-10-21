@@ -73,9 +73,9 @@ export const ProjectList = ({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {projects.map((project, index) => (
+        {projects.map((project) => (
           <ProjectCard
-            key={`${project.id}-${index}`}
+            key={project.id}
             project={project}
             onClick={() => onProjectClick(project)}
             isFavorite={isFavorite ? isFavorite(project.id) : false}

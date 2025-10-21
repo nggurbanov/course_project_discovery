@@ -106,7 +106,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 md:backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo & Title */}
@@ -132,13 +132,13 @@ export const Header = () => {
 
           {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
-            <Drawer direction="right" open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <Drawer open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DrawerTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu className="w-6 h-6" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-full w-3/4 max-w-xs bg-white">
+              <DrawerContent side="right" className="bg-white">
                 <div className="flex items-center justify-between p-4 border-b">
                    <h2 className="text-lg font-semibold">Навигация</h2>
                   <DrawerClose asChild>

@@ -240,28 +240,14 @@ export const ProjectsPage = () => {
             </div>
 
             {/* Content */}
-            <div className="animate-in" key={`view-list-${filteredProjects.length}`}>
-              {/* {activeView === 'list' ? ( */}
-                <ProjectList
-                  key={`list-${filteredProjects.length}-${filters.selectedTags.join(',')}`}
-                  projects={filteredProjects}
-                  onProjectClick={handleProjectClick}
-                  loading={loading}
-                  isFavorite={isFavorite}
-                  onToggleFavorite={toggleFavorite}
-                />
-              {/* ) : (
-                <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                  <ConstellationMap
-                    projects={filteredProjects}
-                    supervisors={filteredSupervisors}
-                    onProjectClick={handleProjectClick}
-                    onSupervisorClick={handleSupervisorClick}
-                    width={800}
-                    height={600}
-                  />
-                </div>
-              )} */}
+            <div>
+              <ProjectList
+                projects={filteredProjects}
+                onProjectClick={handleProjectClick}
+                loading={loading}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+              />
             </div>
           </div>
         </div>

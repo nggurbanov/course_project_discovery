@@ -29,7 +29,7 @@ export const FilterSidebar = ({
   const [supervisorSearch, setSupervisorSearch] = React.useState('');
   const [tagSearch, setTagSearch] = React.useState('');
 
-  const getUniqueValues = (key: keyof Project) => {
+  const getUniqueValues = React.useCallback((key: keyof Project) => {
     const values = projects.map(project => project[key]).flat().filter(Boolean);
     
     // Create a map to handle case-insensitive deduplication and normalization
@@ -55,22 +55,26 @@ export const FilterSidebar = ({
     });
     
     return Array.from(valueMap.values()).sort();
-  };
+  }, [projects]);
 
-  const uniqueSupervisors = getUniqueValues('supervisor');
-  const uniqueCourses = getUniqueValues('courses');
-  const uniqueTypes = getUniqueValues('type');
-  const uniqueFormats = getUniqueValues('format');
-  const uniqueTags = getUniqueValues('tags');
+  const uniqueSupervisors = React.useMemo(() => getUniqueValues('supervisor'), [getUniqueValues]);
+  const uniqueCourses = React.useMemo(() => getUniqueValues('courses'), [getUniqueValues]);
+  const uniqueTypes = React.useMemo(() => getUniqueValues('type'), [getUniqueValues]);
+  const uniqueFormats = React.useMemo(() => getUniqueValues('format'), [getUniqueValues]);
+  const uniqueTags = React.useMemo(() => getUniqueValues('tags'), [getUniqueValues]);
 
   // Filter supervisors based on search
-  const filteredSupervisors = uniqueSupervisors.filter(supervisor =>
-    supervisor.toLowerCase().includes(supervisorSearch.toLowerCase())
+  const filteredSupervisors = React.useMemo(() => 
+    uniqueSupervisors.filter(supervisor =>
+      supervisor.toLowerCase().includes(supervisorSearch.toLowerCase())
+    ), [uniqueSupervisors, supervisorSearch]
   );
 
   // Filter tags based on search
-  const filteredTags = uniqueTags.filter(tag =>
-    tag.toLowerCase().includes(tagSearch.toLowerCase())
+  const filteredTags = React.useMemo(() => 
+    uniqueTags.filter(tag =>
+      tag.toLowerCase().includes(tagSearch.toLowerCase())
+    ), [uniqueTags, tagSearch]
   );
 
   const CheckboxGroup = ({ 
