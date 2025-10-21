@@ -84,7 +84,7 @@ export const HomePage = () => {
             
             <Button 
               size="lg" 
-              className="group bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out animate-pulse-slow text-lg font-bold py-8 px-10" 
+              className="group bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 ease-in-out animate-pulse-slow text-base md:text-lg font-semibold md:font-bold py-6 md:py-8 px-8 md:px-10" 
               onClick={handleGoToProjects}
             >
               Перейти ко всем проектам

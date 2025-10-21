@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectData } from '../hooks/useProjectData';
 import { useFilters } from '../hooks/useFilters';
@@ -10,11 +10,22 @@ import { FilterSidebar } from '../components/FilterSidebar';
 import { ProjectList } from '../components/ProjectList';
 // import { ConstellationMap } from '../components/ConstellationMap';
 import { Button } from '../components/ui/button';
+import { 
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerFooter,
+  DrawerClose
+} from '../components/ui/drawer';
+
 // import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   // Map, 
   Loader2, 
   AlertCircle,
+  Filter,
 } from 'lucide-react';
 import type { Project } from '../types/project.types';
 
@@ -23,6 +34,7 @@ export const ProjectsPage = () => {
   const { data, loading, error } = useProjectData();
   const { filters, filteredProjects, updateFilter, clearFilters } = useFilters(data?.projects || []);
   const { isFavorite, toggleFavorite } = useFavorites();
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
   // // Load saved view mode or default to 'list'
   // const [activeView, setActiveView] = useState<'list' | 'map'>(() => {
@@ -130,7 +142,8 @@ export const ProjectsPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 md:gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="sticky top-20 space-y-6">
+            {/* Desktop Sidebar */}
+            <div className="sticky top-20 space-y-6 hidden lg:block">
                 <SearchBar
                   value={filters.searchQuery}
                   onChange={(value) => updateFilter('searchQuery', value)}
@@ -143,6 +156,47 @@ export const ProjectsPage = () => {
                 projects={data.projects}
                 onClearFilters={clearFilters}
               />
+            </div>
+            {/* Mobile Filter Drawer */}
+            <div className="lg:hidden mb-6">
+              <Drawer open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+                <DrawerTrigger asChild>
+                  <Button variant="outline" className="w-full justify-center py-6">
+                    <Filter className="w-4 h-4 mr-2" />
+                    Фильтры ({
+                      (filters.selectedSupervisor ? 1 : 0) +
+                      filters.selectedCourses.length +
+                      filters.selectedTypes.length +
+                      filters.selectedFormats.length +
+                      filters.selectedTags.length
+                    })
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <DrawerHeader>
+                    <DrawerTitle>Фильтры</DrawerTitle>
+                  </DrawerHeader>
+                  <div className="px-4 overflow-y-auto">
+                    <SearchBar
+                      value={filters.searchQuery}
+                      onChange={(value) => updateFilter('searchQuery', value)}
+                      placeholder="Поиск по названию, описанию..."
+                      className="mb-6"
+                    />
+                    <FilterSidebar
+                      filters={filters}
+                      onFilterChange={updateFilter}
+                      projects={data.projects}
+                      onClearFilters={clearFilters}
+                    />
+                  </div>
+                  <DrawerFooter>
+                    <DrawerClose asChild>
+                      <Button>Показать {filteredProjects.length} проектов</Button>
+                    </DrawerClose>
+                  </DrawerFooter>
+                </DrawerContent>
+              </Drawer>
             </div>
           </div>
 

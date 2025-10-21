@@ -1,16 +1,75 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { GraduationCap, Heart } from 'lucide-react';
+import { GraduationCap, Heart, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { useFavorites } from '../hooks/useFavorites';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTrigger,
+  DrawerClose,
+} from './ui/drawer';
 
 export const Header = () => {
   const location = useLocation();
   const { favoritesCount } = useFavorites();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isProjects = location.pathname === '/projects';
   const isFavorites = location.pathname === '/favorites';
   const isAbout = location.pathname === '/about';
   const isGuide = location.pathname === '/guide';
+
+  const renderNavLinks = (isMobile = false) => (
+    <>
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className={isProjects ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
+      >
+        <Link to="/projects">
+          Проекты
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className={isFavorites ? "bg-gradient-to-r from-pink-600 to-red-600 text-white hover:from-pink-700 hover:to-red-700 border-b-2 border-pink-700" : "hover:bg-gray-100"}
+      >
+        <Link to="/favorites" className="flex items-center space-x-1.5">
+          <Heart className={`w-4 h-4 ${isFavorites ? 'fill-current' : ''}`} />
+          <span>Избранное</span>
+          {favoritesCount > 0 && (
+            <Badge className={`ml-1 ${isFavorites ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-pink-100 text-pink-700 hover:bg-pink-200'} text-xs px-1.5 py-0 min-w-[20px] h-5`}>
+              {favoritesCount}
+            </Badge>
+          )}
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className={isAbout ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
+      >
+        <Link to="/about">
+          О проекте
+        </Link>
+      </Button>
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className={isGuide ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
+      >
+        <Link to="/guide">
+          Руководство
+        </Link>
+      </Button>
+    </>
+  );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -32,59 +91,32 @@ export const Header = () => {
             </div>
           </Link>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-2">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className={isProjects ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
-            >
-              <Link to="/projects">
-                Проекты
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className={isFavorites ? "bg-gradient-to-r from-pink-600 to-red-600 text-white hover:from-pink-700 hover:to-red-700 border-b-2 border-pink-700" : "hover:bg-gray-100"}
-            >
-              <Link to="/favorites" className="flex items-center space-x-1.5">
-                <Heart className={`w-4 h-4 ${isFavorites ? 'fill-current' : ''}`} />
-                <span>Избранное</span>
-                {favoritesCount > 0 && (
-                  <Badge className={`ml-1 ${isFavorites ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-pink-100 text-pink-700 hover:bg-pink-200'} text-xs px-1.5 py-0 min-w-[20px] h-5`}>
-                    {favoritesCount}
-                  </Badge>
-                )}
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className={isAbout ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
-            >
-              <Link to="/about">
-                О проекте
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className={isGuide ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
-            >
-              <Link to="/guide">
-                Руководство
-              </Link>
-            </Button>
+            {renderNavLinks()}
           </nav>
 
-          {/* Mobile Navigation Button - Future Enhancement */}
+          {/* Mobile Navigation */}
           <div className="flex items-center md:hidden">
-            {/* Could add mobile menu toggle here if needed */}
+            <Drawer direction="right" open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <DrawerTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="w-6 h-6" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="h-full w-3/4 max-w-sm">
+                <div className="p-4">
+                  <DrawerClose asChild className="mb-4">
+                     <Button variant="ghost" size="icon" className="absolute top-4 right-4">
+                      <X className="w-6 h-6" />
+                    </Button>
+                  </DrawerClose>
+                  <nav className="flex flex-col space-y-4 mt-12">
+                    {renderNavLinks(true)}
+                  </nav>
+                </div>
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
       </div>

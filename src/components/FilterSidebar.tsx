@@ -214,7 +214,7 @@ export const FilterSidebar = ({
       )}
 
       {/* Filters Accordion */}
-      <div className="overflow-y-auto h-[calc(100vh-320px)] scrollbar-thick">
+      <div className="overflow-y-auto lg:h-[calc(100vh-320px)] scrollbar-thick">
         <Accordion type="multiple" defaultValue={['supervisors', 'courses', 'types', 'formats', 'tags']} className="w-full">
           <AccordionItem value="supervisors" className="border-b border-gray-200 px-4">
             <AccordionTrigger className="hover:no-underline py-4">
