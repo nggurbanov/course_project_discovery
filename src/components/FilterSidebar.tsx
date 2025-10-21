@@ -13,55 +13,31 @@ import {
 } from './ui/accordion';
 import { Filter, X, User, BookOpen, Briefcase, Users, Tag, Search } from 'lucide-react';
 
+interface FilterOptions {
+  supervisors: string[];
+  courses: string[];
+  types: string[];
+  formats: string[];
+  tags: string[];
+}
+
 interface FilterSidebarProps {
   filters: FilterState;
   onFilterChange: (key: keyof FilterState, value: any) => void;
-  projects: Project[];
+  filterOptions: FilterOptions;
   onClearFilters: () => void;
 }
 
-export const FilterSidebar = ({
+export const FilterSidebar = React.memo(({
   filters,
   onFilterChange,
-  projects,
+  filterOptions,
   onClearFilters,
 }: FilterSidebarProps) => {
   const [supervisorSearch, setSupervisorSearch] = React.useState('');
   const [tagSearch, setTagSearch] = React.useState('');
 
-  const getUniqueValues = React.useCallback((key: keyof Project) => {
-    const values = projects.map(project => project[key]).flat().filter(Boolean);
-    
-    // Create a map to handle case-insensitive deduplication and normalization
-    const valueMap = new Map<string, string>();
-    
-    values.forEach(value => {
-      if (typeof value === 'string') {
-        // Normalize the value: trim whitespace, normalize spaces, remove extra newlines
-        const normalizedValue = value.trim().replace(/\s+/g, ' ').replace(/\n/g, ' ');
-        const lowerValue = normalizedValue.toLowerCase();
-        
-        // Keep the first occurrence, preferring properly capitalized versions
-        if (!valueMap.has(lowerValue)) {
-          valueMap.set(lowerValue, normalizedValue);
-        } else {
-          // If we already have this value, prefer the properly capitalized version
-          const existing = valueMap.get(lowerValue)!;
-          if (normalizedValue[0] === normalizedValue[0].toUpperCase() && existing[0] !== existing[0].toUpperCase()) {
-            valueMap.set(lowerValue, normalizedValue);
-          }
-        }
-      }
-    });
-    
-    return Array.from(valueMap.values()).sort();
-  }, [projects]);
-
-  const uniqueSupervisors = React.useMemo(() => getUniqueValues('supervisor'), [getUniqueValues]);
-  const uniqueCourses = React.useMemo(() => getUniqueValues('courses'), [getUniqueValues]);
-  const uniqueTypes = React.useMemo(() => getUniqueValues('type'), [getUniqueValues]);
-  const uniqueFormats = React.useMemo(() => getUniqueValues('format'), [getUniqueValues]);
-  const uniqueTags = React.useMemo(() => getUniqueValues('tags'), [getUniqueValues]);
+  const { supervisors: uniqueSupervisors, courses: uniqueCourses, types: uniqueTypes, formats: uniqueFormats, tags: uniqueTags } = filterOptions;
 
   // Filter supervisors based on search
   const filteredSupervisors = React.useMemo(() => 
@@ -86,46 +62,63 @@ export const FilterSidebar = ({
     selectedValues: string[];
     onChange: (values: string[]) => void;
     icon?: React.ElementType;
-  }) => (
-    <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-      {options.map((option) => {
-        const isSelected = selectedValues.includes(option);
-        return (
-          <div
-            key={option}
-            className={`flex items-center space-x-3 p-2.5 rounded-lg transition-colors cursor-pointer ${
-              isSelected ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50 border border-transparent'
-            }`}
-            onClick={() => {
-              if (isSelected) {
-                onChange(selectedValues.filter(v => v !== option));
-              } else {
-                onChange([...selectedValues, option]);
-              }
-            }}
+  }) => {
+    const [showAll, setShowAll] = React.useState(false);
+    const MAX_INITIAL = 20; // Show only 20 items initially for performance
+    const displayOptions = showAll ? options : options.slice(0, MAX_INITIAL);
+    const hasMore = options.length > MAX_INITIAL;
+
+    return (
+      <div className="space-y-2">
+        <div className="max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          {displayOptions.map((option) => {
+            const isSelected = selectedValues.includes(option);
+            return (
+              <div
+                key={option}
+                className={`flex items-center space-x-3 p-2.5 rounded-lg transition-colors cursor-pointer ${
+                  isSelected ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50 border border-transparent'
+                }`}
+                onClick={() => {
+                  if (isSelected) {
+                    onChange(selectedValues.filter(v => v !== option));
+                  } else {
+                    onChange([...selectedValues, option]);
+                  }
+                }}
+              >
+                <Checkbox
+                  id={option}
+                  checked={isSelected}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      onChange([...selectedValues, option]);
+                    } else {
+                      onChange(selectedValues.filter(v => v !== option));
+                    }
+                  }}
+                />
+                <Label
+                  htmlFor={option}
+                  className="text-sm text-gray-700 cursor-pointer flex-1 leading-tight"
+                >
+                  {option}
+                </Label>
+              </div>
+            );
+          })}
+        </div>
+        {hasMore && !showAll && (
+          <button
+            onClick={() => setShowAll(true)}
+            className="text-sm text-blue-600 hover:text-blue-700 font-medium mt-2"
           >
-            <Checkbox
-              id={option}
-              checked={isSelected}
-              onCheckedChange={(checked) => {
-                if (checked) {
-                  onChange([...selectedValues, option]);
-                } else {
-                  onChange(selectedValues.filter(v => v !== option));
-                }
-              }}
-            />
-            <Label
-              htmlFor={option}
-              className="text-sm text-gray-700 cursor-pointer flex-1 leading-tight"
-            >
-              {option}
-            </Label>
-          </div>
-        );
-      })}
-    </div>
-  );
+            Показать еще {options.length - MAX_INITIAL}...
+          </button>
+        )}
+      </div>
+    );
+  };
 
   const activeFiltersCount = 
     (filters.selectedSupervisor ? 1 : 0) +
@@ -219,7 +212,7 @@ export const FilterSidebar = ({
 
       {/* Filters Accordion */}
       <div className="overflow-y-auto lg:h-[calc(100vh-320px)] scrollbar-thick">
-        <Accordion type="multiple" defaultValue={['supervisors', 'courses', 'types', 'formats', 'tags']} className="w-full">
+        <Accordion type="multiple" defaultValue={['supervisors', 'courses']} className="w-full">
           <AccordionItem value="supervisors" className="border-b border-gray-200 px-4">
             <AccordionTrigger className="hover:no-underline py-4">
               <div className="flex items-center justify-between flex-1">
@@ -399,4 +392,4 @@ export const FilterSidebar = ({
       )}
     </div>
   );
-};
+});

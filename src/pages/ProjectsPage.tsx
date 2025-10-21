@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectData } from '../hooks/useProjectData';
 import { useFilters } from '../hooks/useFilters';
@@ -32,9 +32,21 @@ import type { Project } from '../types/project.types';
 export const ProjectsPage = () => {
   const navigate = useNavigate();
   const { data, loading, error } = useProjectData();
-  const { filters, filteredProjects, updateFilter, clearFilters } = useFilters(data?.projects || []);
+  const { filters, filteredProjects, updateFilter, clearFilters, getUniqueValues } = useFilters(data?.projects || []);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  
+  // Pre-compute filter options to avoid recomputing on every drawer open
+  const filterOptions = useMemo(() => {
+    if (!data?.projects) return null;
+    return {
+      supervisors: getUniqueValues('supervisor'),
+      courses: getUniqueValues('courses'),
+      types: getUniqueValues('type'),
+      formats: getUniqueValues('format'),
+      tags: getUniqueValues('tags'),
+    };
+  }, [data?.projects, getUniqueValues]);
   
   // // Load saved view mode or default to 'list'
   // const [activeView, setActiveView] = useState<'list' | 'map'>(() => {
@@ -150,12 +162,14 @@ export const ProjectsPage = () => {
                   placeholder="Поиск по названию, описанию, тегам..."
                   className="mb-6"
                 />
-              <FilterSidebar
-                filters={filters}
-                onFilterChange={updateFilter}
-                projects={data.projects}
-                onClearFilters={clearFilters}
-              />
+              {filterOptions && (
+                <FilterSidebar
+                  filters={filters}
+                  onFilterChange={updateFilter}
+                  filterOptions={filterOptions}
+                  onClearFilters={clearFilters}
+                />
+              )}
             </div>
             {/* Mobile Filter Drawer */}
             <div className="lg:hidden mb-6">
@@ -176,19 +190,21 @@ export const ProjectsPage = () => {
                   <DrawerHeader>
                     <DrawerTitle>Фильтры</DrawerTitle>
                   </DrawerHeader>
-                  <div className="px-4 overflow-y-auto">
+                  <div className="px-4 overflow-y-auto max-h-[70vh]">
                     <SearchBar
                       value={filters.searchQuery}
                       onChange={(value) => updateFilter('searchQuery', value)}
                       placeholder="Поиск по названию, описанию..."
                       className="mb-6"
                     />
-                    <FilterSidebar
-                      filters={filters}
-                      onFilterChange={updateFilter}
-                      projects={data.projects}
-                      onClearFilters={clearFilters}
-                    />
+                    {filterOptions && (
+                      <FilterSidebar
+                        filters={filters}
+                        onFilterChange={updateFilter}
+                        filterOptions={filterOptions}
+                        onClearFilters={clearFilters}
+                      />
+                    )}
                   </div>
                   <DrawerFooter>
                     <DrawerClose asChild>
