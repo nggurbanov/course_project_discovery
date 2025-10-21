@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { FilterState, Project } from '../types/project.types';
+import type { FilterState } from '../types/project.types';
 import { Checkbox } from './ui/checkbox';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
