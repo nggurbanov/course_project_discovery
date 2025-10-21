@@ -11,6 +11,7 @@ import {
   DrawerClose,
 } from './ui/drawer';
 import { cn } from '../lib/utils';
+import { Separator } from './ui/separator';
 
 export const Header = () => {
   const location = useLocation();
@@ -22,19 +23,44 @@ export const Header = () => {
   const isGuide = location.pathname === '/guide';
 
   const renderNavLinks = (isMobile = false) => {
-    const linkClass = (isActive: boolean) => cn(
-      "w-full text-left justify-start p-4",
-      !isMobile && "w-auto p-2",
-      isActive ? "font-bold text-blue-600 bg-blue-50" : "hover:bg-gray-100"
-    );
+    if (isMobile) {
+      const mobileLinkClass = (isActive: boolean) => cn(
+        "flex items-center w-full p-3 rounded-lg text-base font-medium transition-colors",
+        isActive ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"
+      );
 
+      return (
+        <>
+          <Link to="/projects" className={mobileLinkClass(isProjects)} onClick={() => setIsMenuOpen(false)}>
+            Проекты
+          </Link>
+          <Link to="/favorites" className={mobileLinkClass(isFavorites)} onClick={() => setIsMenuOpen(false)}>
+            <Heart className={`w-5 h-5 mr-3 ${isFavorites ? 'fill-current text-pink-600' : ''}`} />
+            <span>Избранное</span>
+            {favoritesCount > 0 && (
+              <Badge className={cn("ml-auto text-xs", isFavorites ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700')}>
+                {favoritesCount}
+              </Badge>
+            )}
+          </Link>
+          <Link to="/about" className={mobileLinkClass(isAbout)} onClick={() => setIsMenuOpen(false)}>
+            О проекте
+          </Link>
+          <Link to="/guide" className={mobileLinkClass(isGuide)} onClick={() => setIsMenuOpen(false)}>
+            Руководство
+          </Link>
+        </>
+      );
+    }
+
+    // Desktop links remain unchanged
     return (
       <>
         <Button
           asChild
           variant="ghost"
           size="sm"
-          className={linkClass(isProjects)}
+          className={isProjects ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
         >
           <Link to="/projects">
             Проекты
@@ -44,16 +70,13 @@ export const Header = () => {
           asChild
           variant="ghost"
           size="sm"
-          className={linkClass(isFavorites)}
+          className={isFavorites ? "bg-gradient-to-r from-pink-600 to-red-600 text-white hover:from-pink-700 hover:to-red-700 border-b-2 border-pink-700" : "hover:bg-gray-100"}
         >
           <Link to="/favorites" className="flex items-center space-x-1.5">
             <Heart className={`w-4 h-4 ${isFavorites ? 'fill-current' : ''}`} />
             <span>Избранное</span>
             {favoritesCount > 0 && (
-              <Badge className={cn(
-                "ml-1 text-xs px-1.5 py-0 min-w-[20px] h-5",
-                isFavorites ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'
-              )}>
+              <Badge className={`ml-1 ${isFavorites ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-pink-100 text-pink-700 hover:bg-pink-200'} text-xs px-1.5 py-0 min-w-[20px] h-5`}>
                 {favoritesCount}
               </Badge>
             )}
@@ -63,7 +86,7 @@ export const Header = () => {
           asChild
           variant="ghost"
           size="sm"
-          className={linkClass(isAbout)}
+          className={isAbout ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
         >
           <Link to="/about">
             О проекте
@@ -73,14 +96,14 @@ export const Header = () => {
           asChild
           variant="ghost"
           size="sm"
-          className={linkClass(isGuide)}
+          className={isGuide ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
         >
           <Link to="/guide">
             Руководство
           </Link>
         </Button>
       </>
-    )
+    );
   };
 
   return (
@@ -116,17 +139,18 @@ export const Header = () => {
                   <Menu className="w-6 h-6" />
                 </Button>
               </DrawerTrigger>
-              <DrawerContent className="h-full w-3/4 max-w-sm">
-                <div className="p-4">
-                  <DrawerClose asChild className="mb-4">
-                     <Button variant="ghost" size="icon" className="absolute top-4 right-4">
+              <DrawerContent className="h-full w-3/4 max-w-xs bg-white">
+                <div className="flex items-center justify-between p-4 border-b">
+                   <h2 className="text-lg font-semibold">Навигация</h2>
+                  <DrawerClose asChild>
+                     <Button variant="ghost" size="icon">
                       <X className="w-6 h-6" />
                     </Button>
                   </DrawerClose>
-                  <nav className="flex flex-col space-y-2 mt-12">
-                    {renderNavLinks(true)}
-                  </nav>
                 </div>
+                <nav className="flex flex-col space-y-2 p-4">
+                  {renderNavLinks(true)}
+                </nav>
               </DrawerContent>
             </Drawer>
           </div>
