@@ -8,7 +8,7 @@ import { Header } from '../components/Header';
 import { SearchBar } from '../components/SearchBar';
 import { FilterSidebar } from '../components/FilterSidebar';
 import { ProjectList } from '../components/ProjectList';
-// import { ConstellationMap } from '../components/ConstellationMap';
+// import { ConstellationMap } from '../components/ConstellationMap'; // DISABLED: Graph functionality temporarily disabled for performance
 import { Button } from '../components/ui/button';
 import { 
   Drawer,
