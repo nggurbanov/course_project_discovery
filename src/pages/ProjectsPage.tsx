@@ -37,6 +37,19 @@ export const ProjectsPage = () => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   
+  // Scroll to top when drawer opens
+  useEffect(() => {
+    if (isFiltersOpen) {
+      // Small delay to ensure drawer content is rendered
+      setTimeout(() => {
+        const drawerContent = document.querySelector('[data-vaul-drawer]');
+        if (drawerContent) {
+          drawerContent.scrollTop = 0;
+        }
+      }, 100);
+    }
+  }, [isFiltersOpen]);
+  
   // Pre-compute filter options to avoid recomputing on every drawer open
   const filterOptions = useMemo(() => {
     if (!data?.projects) return null;
@@ -174,7 +187,13 @@ export const ProjectsPage = () => {
             </div>
             {/* Mobile Filter Drawer */}
             <div className="lg:hidden mb-6">
-              <Drawer open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>
+              <Drawer 
+                open={isFiltersOpen} 
+                onOpenChange={setIsFiltersOpen}
+                snapPoints={[0.95, 0.5]}
+                activeSnapPoint={0.95}
+                setActiveSnapPoint={() => {}}
+              >
                 <DrawerTrigger asChild>
                   <Button variant="outline" className="w-full justify-center py-6">
                     <Filter className="w-4 h-4 mr-2" />
@@ -187,7 +206,7 @@ export const ProjectsPage = () => {
                     })
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="bg-white border-t border-gray-200">
+                <DrawerContent className="bg-white border-t border-gray-200" side="bottom">
                   <DrawerHeader className="border-b border-gray-200 bg-white">
                     <div className="flex items-center justify-between">
                       <DrawerTitle className="text-lg font-semibold text-gray-900">Фильтры</DrawerTitle>
@@ -199,7 +218,7 @@ export const ProjectsPage = () => {
                     </div>
                   </DrawerHeader>
                   <div className="flex-1 overflow-y-auto bg-white">
-                    <div className="p-4">
+                    <div className="p-4" style={{ scrollBehavior: 'smooth' }}>
                       <SearchBar
                         value={filters.searchQuery}
                         onChange={(value) => updateFilter('searchQuery', value)}
