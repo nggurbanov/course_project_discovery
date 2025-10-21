@@ -10,6 +10,7 @@ import {
   DrawerTrigger,
   DrawerClose,
 } from './ui/drawer';
+import { cn } from '../lib/utils';
 
 export const Header = () => {
   const location = useLocation();
@@ -20,56 +21,67 @@ export const Header = () => {
   const isAbout = location.pathname === '/about';
   const isGuide = location.pathname === '/guide';
 
-  const renderNavLinks = (isMobile = false) => (
-    <>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className={isProjects ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
-      >
-        <Link to="/projects">
-          Проекты
-        </Link>
-      </Button>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className={isFavorites ? "bg-gradient-to-r from-pink-600 to-red-600 text-white hover:from-pink-700 hover:to-red-700 border-b-2 border-pink-700" : "hover:bg-gray-100"}
-      >
-        <Link to="/favorites" className="flex items-center space-x-1.5">
-          <Heart className={`w-4 h-4 ${isFavorites ? 'fill-current' : ''}`} />
-          <span>Избранное</span>
-          {favoritesCount > 0 && (
-            <Badge className={`ml-1 ${isFavorites ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-pink-100 text-pink-700 hover:bg-pink-200'} text-xs px-1.5 py-0 min-w-[20px] h-5`}>
-              {favoritesCount}
-            </Badge>
-          )}
-        </Link>
-      </Button>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className={isAbout ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
-      >
-        <Link to="/about">
-          О проекте
-        </Link>
-      </Button>
-      <Button
-        asChild
-        variant="ghost"
-        size="sm"
-        className={isGuide ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 border-b-2 border-blue-700" : "hover:bg-gray-100"}
-      >
-        <Link to="/guide">
-          Руководство
-        </Link>
-      </Button>
-    </>
-  );
+  const renderNavLinks = (isMobile = false) => {
+    const linkClass = (isActive: boolean) => cn(
+      "w-full text-left justify-start p-4",
+      !isMobile && "w-auto p-2",
+      isActive ? "font-bold text-blue-600 bg-blue-50" : "hover:bg-gray-100"
+    );
+
+    return (
+      <>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className={linkClass(isProjects)}
+        >
+          <Link to="/projects">
+            Проекты
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className={linkClass(isFavorites)}
+        >
+          <Link to="/favorites" className="flex items-center space-x-1.5">
+            <Heart className={`w-4 h-4 ${isFavorites ? 'fill-current' : ''}`} />
+            <span>Избранное</span>
+            {favoritesCount > 0 && (
+              <Badge className={cn(
+                "ml-1 text-xs px-1.5 py-0 min-w-[20px] h-5",
+                isFavorites ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'
+              )}>
+                {favoritesCount}
+              </Badge>
+            )}
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className={linkClass(isAbout)}
+        >
+          <Link to="/about">
+            О проекте
+          </Link>
+        </Button>
+        <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className={linkClass(isGuide)}
+        >
+          <Link to="/guide">
+            Руководство
+          </Link>
+        </Button>
+      </>
+    )
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -111,7 +123,7 @@ export const Header = () => {
                       <X className="w-6 h-6" />
                     </Button>
                   </DrawerClose>
-                  <nav className="flex flex-col space-y-4 mt-12">
+                  <nav className="flex flex-col space-y-2 mt-12">
                     {renderNavLinks(true)}
                   </nav>
                 </div>
