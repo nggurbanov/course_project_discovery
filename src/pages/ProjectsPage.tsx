@@ -26,6 +26,7 @@ import {
   Loader2, 
   AlertCircle,
   Filter,
+  X,
 } from 'lucide-react';
 import type { Project } from '../types/project.types';
 
@@ -186,29 +187,40 @@ export const ProjectsPage = () => {
                     })
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent>
-                  <DrawerHeader>
-                    <DrawerTitle>Фильтры</DrawerTitle>
+                <DrawerContent className="bg-white border-t border-gray-200">
+                  <DrawerHeader className="border-b border-gray-200 bg-white">
+                    <div className="flex items-center justify-between">
+                      <DrawerTitle className="text-lg font-semibold text-gray-900">Фильтры</DrawerTitle>
+                      <DrawerClose asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </DrawerClose>
+                    </div>
                   </DrawerHeader>
-                  <div className="px-4 overflow-y-auto max-h-[70vh]">
-                    <SearchBar
-                      value={filters.searchQuery}
-                      onChange={(value) => updateFilter('searchQuery', value)}
-                      placeholder="Поиск по названию, описанию..."
-                      className="mb-6"
-                    />
-                    {filterOptions && (
-                      <FilterSidebar
-                        filters={filters}
-                        onFilterChange={updateFilter}
-                        filterOptions={filterOptions}
-                        onClearFilters={clearFilters}
+                  <div className="flex-1 overflow-y-auto bg-white">
+                    <div className="p-4">
+                      <SearchBar
+                        value={filters.searchQuery}
+                        onChange={(value) => updateFilter('searchQuery', value)}
+                        placeholder="Поиск по названию, описанию..."
+                        className="mb-6"
                       />
-                    )}
+                      {filterOptions && (
+                        <FilterSidebar
+                          filters={filters}
+                          onFilterChange={updateFilter}
+                          filterOptions={filterOptions}
+                          onClearFilters={clearFilters}
+                        />
+                      )}
+                    </div>
                   </div>
-                  <DrawerFooter>
+                  <DrawerFooter className="border-t border-gray-200 bg-gray-50">
                     <DrawerClose asChild>
-                      <Button>Показать {filteredProjects.length} проектов</Button>
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        Показать {filteredProjects.length} проектов
+                      </Button>
                     </DrawerClose>
                   </DrawerFooter>
                 </DrawerContent>
