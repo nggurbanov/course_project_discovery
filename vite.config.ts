@@ -4,7 +4,7 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/course-project/',
+  base: '/course_project_discovery/',
   plugins: [react()],
   resolve: {
     alias: {
