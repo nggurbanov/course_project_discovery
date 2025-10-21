@@ -11,7 +11,6 @@ import {
   DrawerClose,
 } from './ui/drawer';
 import { cn } from '../lib/utils';
-import { Separator } from './ui/separator';
 
 export const Header = () => {
   const location = useLocation();
