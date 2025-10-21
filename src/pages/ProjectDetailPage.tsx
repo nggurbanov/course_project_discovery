@@ -1,4 +1,4 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useProjectData } from '../hooks/useProjectData';
 import { useFavorites } from '../hooks/useFavorites';
 import { Header } from '../components/Header';

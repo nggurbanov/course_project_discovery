@@ -5,15 +5,17 @@ interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
 }
 
 export const SearchBar = ({ 
   value, 
   onChange, 
-  placeholder = "Search projects..." 
+  placeholder = "Search projects...",
+  className
 }: SearchBarProps) => {
   return (
-    <div className="relative group">
+    <div className={`relative group ${className}`}>
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-focus-within:text-blue-600 transition-colors z-10" />
       <Input
         type="text"

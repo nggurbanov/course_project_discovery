@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Search, User, Tag, BookOpen } from 'lucide-react';
 import type { Project } from '../types/project.types';
 

@@ -12,13 +12,10 @@ import {
   Zap,
   ArrowRight
 } from 'lucide-react';
-import type { Project } from '../types/project.types';
-
-const VIEW_MODE_STORAGE_KEY = 'coursework_view_mode';
 
 export const HomePage = () => {
   const navigate = useNavigate();
-  const { data, loading, error } = useProjectData();
+  const { data } = useProjectData();
 
   const handleGoToProjects = () => {
     navigate('/projects');

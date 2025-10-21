@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjectData } from '../hooks/useProjectData';
 import { useFilters } from '../hooks/useFilters';
@@ -10,17 +10,13 @@ import { FilterSidebar } from '../components/FilterSidebar';
 import { ProjectList } from '../components/ProjectList';
 // import { ConstellationMap } from '../components/ConstellationMap';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 // import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   // Map, 
-  List, 
   Loader2, 
   AlertCircle,
 } from 'lucide-react';
-import type { Project, Supervisor } from '../types/project.types';
-
-const VIEW_MODE_STORAGE_KEY = 'coursework_view_mode';
+import type { Project } from '../types/project.types';
 
 export const ProjectsPage = () => {
   const navigate = useNavigate();
@@ -124,15 +120,6 @@ export const ProjectsPage = () => {
   const handleProjectClick = (project: Project) => {
     navigate(`/projects/${project.id}`);
   };
-
-  const handleSupervisorClick = (supervisor: Supervisor) => {
-    navigate(`/supervisors/${supervisor.id}`);
-  };
-
-  const filteredSupervisorIds = new Set(filteredProjects.map(p => p.supervisor));
-  const filteredSupervisors = data.supervisors.filter(s => 
-    s.projects.some(pId => filteredProjects.find(p => p.id === pId))
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-purple-50/20">

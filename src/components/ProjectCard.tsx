@@ -3,7 +3,6 @@ import { Users, ArrowRight, BookOpen, Heart } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Card, CardContent } from './ui/card';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { Button } from './ui/button';
 
 interface ProjectCardProps {
   project: Project;

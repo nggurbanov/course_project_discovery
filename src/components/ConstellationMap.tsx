@@ -5,10 +5,10 @@ import { Button } from './ui/button';
 import { Home, Tags, Users } from 'lucide-react';
 
 // Helper function to wrap text
-function wrapText(text: d3.Selection<d3.BaseType | SVGTextElement, unknown, SVGGElement, any>, width: number) {
-  text.each(function () {
+function wrapText(selection: d3.Selection<SVGTextElement, GraphNode, SVGGElement, unknown>, width: number) {
+  selection.each(function (d) {
     const textElement = d3.select(this);
-    const words = textElement.text().split(/\s+/).reverse();
+    const words = (d.name || '').split(/\s+/).reverse();
     let word;
     let line: string[] = [];
     let lineNumber = 0;
@@ -119,7 +119,7 @@ export const ConstellationMap = ({
         node.y = height / 2 + radius * Math.sin(i * angleStep);
       });
 
-      const node = g.append("g")
+      g.append("g")
         .selectAll("circle")
         .data(supervisorNodes)
         .enter().append("circle")
@@ -151,7 +151,7 @@ export const ConstellationMap = ({
           setTooltip(t => ({ ...t, visible: false }));
         });
 
-      const labels = g.append("g")
+      g.append("g")
         .selectAll("text")
         .data(supervisorNodes)
         .enter().append("text")
@@ -324,7 +324,7 @@ export const ConstellationMap = ({
         .attr("r", 10)
         .attr("fill", "#10b981")
         .style("cursor", "pointer")
-        .on("click", (event, d) => {
+        .on("click", (_event, d) => {
           setSelectedTag(d.name);
           setViewMode('tag_centric');
         })
@@ -407,7 +407,7 @@ export const ConstellationMap = ({
         .attr("stroke", "#fff")
         .attr("stroke-width", 2)
         .style("cursor", "pointer")
-        .on("click", (event, d) => {
+        .on("click", (_event, d) => {
           if (d.type === 'project') {
             const project = projects.find(p => p.id === d.id);
             if (project) onProjectClick(project);
