@@ -36,19 +36,7 @@ export const ProjectsPage = () => {
   const { filters, filteredProjects, updateFilter, clearFilters, getUniqueValues } = useFilters(data?.projects || []);
   const { isFavorite, toggleFavorite } = useFavorites();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  
-  // Scroll to top when drawer opens
-  useEffect(() => {
-    if (isFiltersOpen) {
-      // Small delay to ensure drawer content is rendered
-      setTimeout(() => {
-        const drawerContent = document.querySelector('[data-vaul-drawer]');
-        if (drawerContent) {
-          drawerContent.scrollTop = 0;
-        }
-      }, 100);
-    }
-  }, [isFiltersOpen]);
+  const [snap, setSnap] = useState<number | string | null>(null);
   
   // Pre-compute filter options to avoid recomputing on every drawer open
   const filterOptions = useMemo(() => {
@@ -188,11 +176,14 @@ export const ProjectsPage = () => {
             {/* Mobile Filter Drawer */}
             <div className="lg:hidden mb-6">
               <Drawer 
-                open={isFiltersOpen} 
-                onOpenChange={setIsFiltersOpen}
+                open={isFiltersOpen}
+                onOpenChange={(isOpen) => {
+                  if (isOpen) setSnap(0.95); // Reset snap to top on open
+                  setIsFiltersOpen(isOpen);
+                }}
                 snapPoints={[0.95, 0.5]}
-                activeSnapPoint={0.95}
-                setActiveSnapPoint={() => {}}
+                activeSnapPoint={snap}
+                setActiveSnapPoint={setSnap}
               >
                 <DrawerTrigger asChild>
                   <Button variant="outline" className="w-full justify-center py-6">
@@ -206,19 +197,19 @@ export const ProjectsPage = () => {
                     })
                   </Button>
                 </DrawerTrigger>
-                <DrawerContent className="bg-white border-t border-gray-200" side="bottom">
+                <DrawerContent className="bg-white" side="bottom">
                   <DrawerHeader className="border-b border-gray-200 bg-white">
                     <div className="flex items-center justify-between">
                       <DrawerTitle className="text-lg font-semibold text-gray-900">Фильтры</DrawerTitle>
                       <DrawerClose asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsFiltersOpen(false)}>
                           <X className="h-4 w-4" />
                         </Button>
                       </DrawerClose>
                     </div>
                   </DrawerHeader>
                   <div className="flex-1 overflow-y-auto bg-white">
-                    <div className="p-4" style={{ scrollBehavior: 'smooth' }}>
+                    <div className="p-4">
                       <SearchBar
                         value={filters.searchQuery}
                         onChange={(value) => updateFilter('searchQuery', value)}
