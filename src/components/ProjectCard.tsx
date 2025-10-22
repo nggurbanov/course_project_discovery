@@ -68,12 +68,8 @@ export const ProjectCard = ({ project, onClick, isFavorite = false, onToggleFavo
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium text-gray-900 truncate">
                 {project.supervisor}
-              </p>
-              <p className="text-xs text-gray-500 flex items-center mt-0.5">
-                <BookOpen className="w-3 h-3 mr-1" />
-                {project.courses.length > 0 ? project.courses[0].replace(/^\d+ курс /, '') : 'Курс не указан'}
               </p>
             </div>
           </div>

@@ -71,11 +71,12 @@ export const FilterSidebar = React.memo(({
     return (
       <div className="space-y-2">
         <div className="max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-          {displayOptions.map((option) => {
+          {displayOptions.map((option, index) => {
             const isSelected = selectedValues.includes(option);
+            const displayOption = option || 'Не указано';
             return (
               <div
-                key={option}
+                key={`${option}-${index}`}
                 className={`flex items-center space-x-3 p-2.5 rounded-lg transition-colors cursor-pointer ${
                   isSelected ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50 border border-transparent'
                 }`}
@@ -102,7 +103,7 @@ export const FilterSidebar = React.memo(({
                   htmlFor={option}
                   className="text-sm text-gray-700 cursor-pointer flex-1 leading-tight"
                 >
-                  {option}
+                  {displayOption}
                 </Label>
               </div>
             );
@@ -212,44 +213,7 @@ export const FilterSidebar = React.memo(({
 
       {/* Filters Accordion */}
       <div className="overflow-y-auto lg:h-[calc(100vh-320px)] scrollbar-thick">
-        <Accordion type="multiple" defaultValue={['supervisors', 'courses']} className="w-full">
-          <AccordionItem value="supervisors" className="border-b border-gray-200 px-4">
-            <AccordionTrigger className="hover:no-underline py-4">
-              <div className="flex items-center justify-between flex-1">
-                <div className="flex items-center space-x-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm font-semibold text-gray-900">Руководители</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {filters.selectedSupervisor && (
-                    <Badge variant="secondary" className="text-xs">1</Badge>
-                  )}
-                  <span className="text-xs text-gray-400">({uniqueSupervisors.length})</span>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="pt-2 pb-4">
-              <div className="mb-3">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Поиск руководителя..."
-                    value={supervisorSearch}
-                    onChange={(e) => setSupervisorSearch(e.target.value)}
-                    className="pl-8 h-9 text-sm"
-                  />
-                </div>
-              </div>
-              <CheckboxGroup
-                options={filteredSupervisors}
-                selectedValues={filters.selectedSupervisor ? [filters.selectedSupervisor] : []}
-                onChange={(values) => onFilterChange('selectedSupervisor', values[0] || '')}
-                icon={User}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
+        <Accordion type="multiple" defaultValue={['courses', 'tags']} className="w-full">
           <AccordionItem value="courses" className="border-b border-gray-200 px-4">
             <AccordionTrigger className="hover:no-underline py-4">
               <div className="flex items-center justify-between flex-1">
@@ -277,61 +241,7 @@ export const FilterSidebar = React.memo(({
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="types" className="border-b border-gray-200 px-4">
-            <AccordionTrigger className="hover:no-underline py-4">
-              <div className="flex items-center justify-between flex-1">
-                <div className="flex items-center space-x-2">
-                  <Briefcase className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm font-semibold text-gray-900">Тип проекта</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {filters.selectedTypes.length > 0 && (
-                    <Badge variant="secondary" className="text-xs">
-                      {filters.selectedTypes.length}
-                    </Badge>
-                  )}
-                  <span className="text-xs text-gray-400">({uniqueTypes.length})</span>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="pt-2 pb-4">
-              <CheckboxGroup
-                options={uniqueTypes}
-                selectedValues={filters.selectedTypes}
-                onChange={(values) => onFilterChange('selectedTypes', values)}
-                icon={Briefcase}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="formats" className="border-b border-gray-200 px-4">
-            <AccordionTrigger className="hover:no-underline py-4">
-              <div className="flex items-center justify-between flex-1">
-                <div className="flex items-center space-x-2">
-                  <Users className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm font-semibold text-gray-900">Формат</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {filters.selectedFormats.length > 0 && (
-                    <Badge variant="secondary" className="text-xs">
-                      {filters.selectedFormats.length}
-                    </Badge>
-                  )}
-                  <span className="text-xs text-gray-400">({uniqueFormats.length})</span>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="pt-2 pb-4">
-              <CheckboxGroup
-                options={uniqueFormats}
-                selectedValues={filters.selectedFormats}
-                onChange={(values) => onFilterChange('selectedFormats', values)}
-                icon={Users}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="tags" className="border-0 px-4">
+          <AccordionItem value="tags" className="border-b border-gray-200 px-4">
             <AccordionTrigger className="hover:no-underline py-4">
               <div className="flex items-center justify-between flex-1">
                 <div className="flex items-center space-x-2">
@@ -371,6 +281,97 @@ export const FilterSidebar = React.memo(({
                 selectedValues={filters.selectedTags}
                 onChange={(values) => onFilterChange('selectedTags', values)}
                 icon={Tag}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="types" className="border-b border-gray-200 px-4">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <div className="flex items-center justify-between flex-1">
+                <div className="flex items-center space-x-2">
+                  <Briefcase className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-semibold text-gray-900">Тип проекта</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {filters.selectedTypes.length > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {filters.selectedTypes.length}
+                    </Badge>
+                  )}
+                  <span className="text-xs text-gray-400">({uniqueTypes.length})</span>
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 pb-4">
+              <CheckboxGroup
+                options={uniqueTypes}
+                selectedValues={filters.selectedTypes}
+                onChange={(values) => onFilterChange('selectedTypes', values)}
+                icon={Briefcase}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="supervisors" className="border-b border-gray-200 px-4">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <div className="flex items-center justify-between flex-1">
+                <div className="flex items-center space-x-2">
+                  <User className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-semibold text-gray-900">Руководители</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {filters.selectedSupervisor && (
+                    <Badge variant="secondary" className="text-xs">1</Badge>
+                  )}
+                  <span className="text-xs text-gray-400">({uniqueSupervisors.length})</span>
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 pb-4">
+              <div className="mb-3">
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Поиск руководителя..."
+                    value={supervisorSearch}
+                    onChange={(e) => setSupervisorSearch(e.target.value)}
+                    className="pl-8 h-9 text-sm"
+                  />
+                </div>
+              </div>
+              <CheckboxGroup
+                options={filteredSupervisors}
+                selectedValues={filters.selectedSupervisor ? [filters.selectedSupervisor] : []}
+                onChange={(values) => onFilterChange('selectedSupervisor', values[0] || '')}
+                icon={User}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="formats" className="border-0 px-4">
+            <AccordionTrigger className="hover:no-underline py-4">
+              <div className="flex items-center justify-between flex-1">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm font-semibold text-gray-900">Формат</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {filters.selectedFormats.length > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {filters.selectedFormats.length}
+                    </Badge>
+                  )}
+                  <span className="text-xs text-gray-400">({uniqueFormats.length})</span>
+                </div>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pt-2 pb-4">
+              <CheckboxGroup
+                options={uniqueFormats}
+                selectedValues={filters.selectedFormats}
+                onChange={(values) => onFilterChange('selectedFormats', values)}
+                icon={Users}
               />
             </AccordionContent>
           </AccordionItem>
