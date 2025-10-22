@@ -137,10 +137,12 @@ export const ProjectCard = ({ project, onClick, isFavorite = false, onToggleFavo
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center space-x-4 text-xs text-gray-500">
-            <div className="flex items-center space-x-1.5">
-              <Users className="w-4 h-4" />
-              <span>{project.team_size} человек</span>
-            </div>
+            {!!Number(project.team_size) && (
+              <div className="flex items-center space-x-1.5">
+                <Users className="w-4 h-4" />
+                <span>{project.team_size} человек</span>
+              </div>
+            )}
             <Badge variant="outline" className={`${getFormatColor(project.format)} text-xs`}>
               {project.format}
             </Badge>
